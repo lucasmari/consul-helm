@@ -22,14 +22,14 @@ jobs:
           command: bats ./test/unit
   unit-helm3:
     docker:
-      - image: docker.mirror.hashicorp.services/hashicorpdev/consul-helm-test:0.9.0
+      - image: docker.mirror.hashicorp.services/hashicorpdev/consul-helm-test:0.9.1
 
     steps:
       - checkout
 
       - run:
           name: Run Unit Tests
-          command: bats ./test/unit
+          command: bats --jobs 4 ./test/unit
 
   go-fmt-and-vet-acceptance:
     executor: go
@@ -643,22 +643,8 @@ workflows:
   version: 2
   test:
     jobs:
-      - go-fmt-and-vet-acceptance
-      - go-fmt-and-vet-helm-gen
-      - unit-acceptance-framework:
-          requires:
-            - go-fmt-and-vet-acceptance
-      - unit-helm-gen:
-          requires:
-            - go-fmt-and-vet-helm-gen
-      - test-helm-gen
       - unit-helm2
       - unit-helm3
-      - acceptance:
-          requires:
-            - unit-helm2
-            - unit-helm3
-            - unit-acceptance-framework
   nightly-acceptance-tests:
     triggers:
       - schedule:
